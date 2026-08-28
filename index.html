@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Интерактивный маршрут старта с персональным форматом сопровождения фитнес-тренера." />
+  <title>Сила в ритме | персональный маршрут старта</title>
+  <style>
+    :root { --ink:#17231f; --muted:#65716c; --paper:#f7f5ef; --card:#fffdfa; --line:#e6e1d7; --lime:#d9ff70; --green:#176b4a; --orange:#ff7043; --shadow:0 20px 50px rgba(39, 48, 42, .09); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; min-width:320px; font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:var(--ink); background:var(--paper); }
+    button, input, select { font:inherit; }
+    button { cursor:pointer; }
+    .shell { width:min(1160px, calc(100% - 36px)); margin:auto; }
+    .eyebrow { margin:0 0 12px; color:var(--green); font-size:.76rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding:22px 0; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:850; letter-spacing:-.03em; }
+    .brand-mark { width:31px; height:31px; display:grid; place-items:center; border-radius:50% 50% 50% 8px; transform:rotate(-35deg); background:var(--lime); color:var(--ink); }
+    .topbar a { color:var(--ink); font-size:.9rem; font-weight:700; text-decoration:none; }
+    .hero { padding:45px 0 42px; }
+    .hero-grid { display:grid; grid-template-columns:1.25fr .75fr; gap:24px; align-items:stretch; }
+    .hero-copy { min-height:440px; padding:48px; display:flex; flex-direction:column; justify-content:space-between; background:var(--green); border-radius:28px; color:white; overflow:hidden; position:relative; }
+    .hero-copy::after { content:""; position:absolute; width:260px; height:260px; right:-74px; bottom:-82px; background:var(--lime); border-radius:48% 52% 46% 54%; opacity:.94; }
+    .hero h1 { max-width:690px; margin:0; font-size:clamp(2.45rem, 5vw, 4.85rem); line-height:.97; letter-spacing:-.065em; position:relative; z-index:1; }
+    .hero-text { max-width:515px; margin:22px 0 0; color:#dcebe5; font-size:1.08rem; line-height:1.55; position:relative; z-index:1; }
+    .hero-note { display:flex; align-items:center; gap:10px; max-width:500px; margin-top:28px; position:relative; z-index:1; font-size:.9rem; color:#e7f5ee; }
+    .dot { flex:0 0 10px; width:10px; height:10px; border-radius:50%; background:var(--lime); }
+    .promise { display:flex; flex-direction:column; justify-content:space-between; min-height:440px; padding:31px; border-radius:28px; background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); }
+    .promise h2 { margin:0; font-size:1.7rem; letter-spacing:-.045em; line-height:1.02; }
+    .steps-mini { display:grid; gap:12px; margin:25px 0; }
+    .mini { display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); color:#3e4b45; font-size:.93rem; }
+    .mini b { display:grid; place-items:center; width:28px; height:28px; border-radius:50%; background:#eff6dc; color:var(--green); font-size:.78rem; }
+    .btn { min-height:50px; padding:14px 20px; border:0; border-radius:13px; font-weight:800; letter-spacing:-.01em; transition:.18s transform,.18s box-shadow,.18s background; }
+    .btn:hover { transform:translateY(-2px); }
+    .btn:focus-visible, .choice:focus-visible, .icon-btn:focus-visible { outline:3px solid #83beff; outline-offset:3px; }
+    .btn-primary { background:var(--lime); color:var(--ink); box-shadow:0 9px 18px rgba(0,0,0,.14); }
+    .btn-dark { background:var(--ink); color:white; }
+    .btn-quiet { background:#edf1eb; color:var(--ink); }
+    .journey { padding:36px 0 76px; }
+    .section-title { max-width:670px; margin:0 0 24px; font-size:clamp(1.9rem, 4vw, 3.2rem); line-height:1.02; letter-spacing:-.055em; }
+    .section-sub { max-width:650px; margin:-9px 0 27px; color:var(--muted); line-height:1.55; }
+    .quiz-card { padding:30px; background:var(--card); border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow); }
+    .quiz-top { display:flex; justify-content:space-between; gap:20px; align-items:center; margin-bottom:24px; }
+    .progress { height:8px; width:160px; overflow:hidden; background:#e8e8e0; border-radius:10px; }
+    .progress span { display:block; width:20%; height:100%; background:var(--green); border-radius:10px; transition:width .25s; }
+    .progress-label { color:var(--muted); font-size:.87rem; font-weight:700; }
+    .question { display:none; min-height:276px; }
+    .question.active { display:block; animation:rise .25s ease; }
+    @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    .question h3 { max-width:700px; margin:0 0 8px; font-size:clamp(1.45rem, 3vw, 2.2rem); letter-spacing:-.045em; }
+    .question p { margin:0 0 23px; color:var(--muted); }
+    .choices { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; }
+    .choice { width:100%; min-height:75px; padding:16px; border:1px solid var(--line); border-radius:15px; background:#fff; color:var(--ink); text-align:left; font-weight:750; transition:.16s border,.16s background,.16s transform; }
+    .choice:hover, .choice.selected { border-color:var(--green); background:#f0f8f2; transform:translateY(-1px); }
+    .choice small { display:block; margin-top:3px; color:var(--muted); font-weight:500; }
+    .quiz-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:26px; }
+    .text-button { padding:9px 0; border:0; background:transparent; color:var(--muted); font-weight:750; }
+    .text-button:disabled { opacity:.35; cursor:not-allowed; }
+    .result { display:none; padding:36px; color:white; background:var(--ink); border-radius:24px; box-shadow:var(--shadow); }
+    .result.active { display:block; animation:rise .3s ease; }
+    .result-grid { display:grid; grid-template-columns:1.25fr .75fr; gap:25px; }
+    .result h3 { max-width:690px; margin:0 0 12px; font-size:clamp(2rem, 4vw, 3.25rem); line-height:1; letter-spacing:-.06em; }
+    .result p { color:#d6ded9; line-height:1.58; }
+    .route { align-self:start; padding:22px; border-radius:18px; background:#27352f; }
+    .route p { margin:0 0 12px; color:white; font-size:.9rem; font-weight:800; }
+    .route div { display:flex; gap:9px; align-items:flex-start; margin:13px 0; color:#e0e8e2; font-size:.88rem; }
+    .route i { display:grid; flex:0 0 22px; place-items:center; width:22px; height:22px; border-radius:50%; background:var(--lime); color:var(--ink); font-style:normal; font-size:.7rem; font-weight:900; }
+    .offers { padding:32px 0 76px; }
+    .offer-head { display:flex; justify-content:space-between; gap:24px; align-items:end; margin-bottom:23px; }
+    .offer-head p { max-width:445px; color:var(--muted); line-height:1.55; }
+    .offers-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+    .package { position:relative; display:flex; flex-direction:column; min-height:435px; padding:26px; background:var(--card); border:1px solid var(--line); border-radius:22px; }
+    .package.recommended { border:2px solid var(--green); box-shadow:var(--shadow); }
+    .badge { position:absolute; top:-13px; left:20px; padding:6px 10px; border-radius:99px; background:var(--lime); color:var(--ink); font-size:.73rem; font-weight:900; }
+    .package h3 { margin:0; font-size:1.55rem; letter-spacing:-.045em; }
+    .package .desc { min-height:48px; margin:9px 0 19px; color:var(--muted); font-size:.92rem; line-height:1.45; }
+    .price { margin:0 0 20px; font-size:1.64rem; font-weight:900; letter-spacing:-.045em; }
+    .price small { display:block; margin-top:3px; color:var(--muted); font-size:.77rem; font-weight:600; letter-spacing:0; }
+    .features { display:grid; gap:11px; margin:0 0 24px; padding:0; list-style:none; color:#3e4b45; font-size:.9rem; }
+    .features li { display:flex; gap:9px; }
+    .features li::before { content:"✓"; display:grid; place-items:center; width:20px; height:20px; flex:0 0 20px; border-radius:50%; color:var(--green); background:#e9f6ed; font-weight:900; }
+    .package .btn { width:100%; margin-top:auto; }
+    .proof { padding:70px 0; background:#e7eade; }
+    .proof-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:22px; }
+    .proof-panel { padding:32px; border-radius:23px; background:var(--card); }
+    .proof-panel h3 { margin:0 0 13px; font-size:1.7rem; letter-spacing:-.045em; }
+    .proof-panel p { color:var(--muted); line-height:1.55; }
+    .proof-list { display:grid; gap:12px; margin-top:21px; }
+    .proof-item { padding:15px 0; border-top:1px solid var(--line); }
+    .proof-item b { display:block; margin-bottom:4px; }
+    .proof-item span { color:var(--muted); font-size:.9rem; }
+    .week { padding:32px; border-radius:23px; background:var(--orange); color:#28150e; }
+    .week h3 { margin:0 0 23px; font-size:1.7rem; letter-spacing:-.045em; }
+    .day { display:grid; grid-template-columns:110px minmax(0, 1fr); gap:14px; padding:14px 0; border-top:1px solid rgba(40,21,14,.16); }
+    .day strong { font-size:.86rem; }
+    .day p { margin:0; font-size:.93rem; line-height:1.35; }
+    .faq { padding:75px 0; }
+    .faq-grid { display:grid; grid-template-columns:.75fr 1.25fr; gap:35px; }
+    .faq-card { border-top:1px solid #bcc5bd; }
+    .faq-card button { display:flex; width:100%; justify-content:space-between; gap:15px; padding:19px 0; border:0; background:transparent; text-align:left; color:var(--ink); font-weight:800; }
+    .faq-card span:last-child { color:var(--green); font-size:1.3rem; }
+    .faq-answer { max-height:0; overflow:hidden; transition:max-height .22s ease; color:var(--muted); line-height:1.55; }
+    .faq-card.open .faq-answer { max-height:150px; padding:0 0 18px; }
+    .cta { padding:42px; border-radius:27px; background:var(--green); color:white; }
+    .cta-grid { display:grid; grid-template-columns:1fr auto; gap:30px; align-items:center; }
+    .cta h2 { max-width:620px; margin:0; font-size:clamp(2rem, 4vw, 3.3rem); letter-spacing:-.06em; line-height:1; }
+    .cta p { max-width:580px; color:#d8e8df; line-height:1.55; }
+    .legal { margin:23px 0 0; color:#899c92; font-size:.77rem; line-height:1.45; }
+    footer { padding:26px 0 36px; color:var(--muted); font-size:.81rem; }
+    .modal { position:fixed; inset:0; z-index:20; display:none; place-items:center; padding:20px; background:rgba(10,20,15,.56); backdrop-filter:blur(5px); }
+    .modal.open { display:grid; }
+    .modal-card { position:relative; width:min(520px, 100%); padding:30px; border-radius:24px; background:var(--card); box-shadow:0 30px 80px rgba(0,0,0,.22); }
+    .modal-card h2 { margin:0 0 8px; font-size:2rem; letter-spacing:-.05em; }
+    .modal-card p { margin:0 0 21px; color:var(--muted); line-height:1.5; }
+    .icon-btn { position:absolute; top:16px; right:16px; width:36px; height:36px; border:0; border-radius:50%; background:#eef1eb; color:var(--ink); font-size:1.2rem; }
+    .form-grid { display:grid; gap:13px; }
+    label { display:grid; gap:6px; color:#425149; font-size:.84rem; font-weight:750; }
+    input, select { width:100%; min-height:48px; padding:12px; border:1px solid #d9ded7; border-radius:11px; background:white; color:var(--ink); }
+    input:focus, select:focus { outline:3px solid #dbe9ff; border-color:#579ce8; }
+    .consent { display:flex; gap:9px; align-items:flex-start; color:var(--muted); font-size:.76rem; line-height:1.4; font-weight:500; }
+    .consent input { width:16px; min-height:16px; margin-top:1px; }
+    .success { display:none; padding:17px; border-radius:12px; background:#eaf8e9; color:#175927; line-height:1.4; font-size:.9rem; }
+    .success.show { display:block; }
+    @media (max-width:820px) { .hero-grid,.result-grid,.proof-grid,.faq-grid,.cta-grid { grid-template-columns:1fr; } .hero-copy,.promise { min-height:auto; } .offers-grid { grid-template-columns:1fr; } .offer-head { display:block; } .cta { padding:30px; } }
+    @media (max-width:560px) { .shell { width:min(100% - 24px, 1160px); } .topbar a { display:none; } .hero { padding-top:17px; } .hero-copy,.promise,.quiz-card,.result { padding:23px; border-radius:20px; } .choices { grid-template-columns:1fr; } .quiz-top { align-items:flex-start; flex-direction:column; } .hero h1 { font-size:2.7rem; } .question { min-height:330px; } .week,.proof-panel { padding:24px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="shell topbar">
+      <div class="brand"><span class="brand-mark">●</span><span>сила в ритме</span></div>
+      <a href="#format">как устроено сопровождение</a>
+    </div>
+
+    <section class="shell hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div>
+            <p class="eyebrow" style="color:var(--lime)">персональный тренинг без хаоса</p>
+            <h1>Начните с маршрута, который реально впишется в вашу жизнь.</h1>
+            <p class="hero-text">За 2 минуты подберём формат работы под вашу цель, график и уровень поддержки. Без жёстких диет и обещаний невозможного.</p>
+          </div>
+          <div class="hero-note"><span class="dot"></span>Это не медицинская диагностика. При боли или противопоказаниях нужна консультация врача.</div>
+        </div>
+        <aside class="promise">
+          <div>
+            <p class="eyebrow">ваш следующий шаг</p>
+            <h2>Сначала поймём, какой формат вам действительно нужен.</h2>
+          </div>
+          <div class="steps-mini">
+            <div class="mini"><b>1</b><span>Цель и доступное время</span></div>
+            <div class="mini"><b>2</b><span>Персональная рекомендация</span></div>
+            <div class="mini"><b>3</b><span>Выбор формата и даты старта</span></div>
+          </div>
+          <button class="btn btn-dark" data-scroll="diagnostic">Подобрать формат</button>
+        </aside>
+      </div>
+    </section>
+
+    <section class="shell journey" id="diagnostic">
+      <p class="eyebrow">мини-диагностика</p>
+      <h2 class="section-title">Ответьте на 5 вопросов и получите логичный первый шаг.</h2>
+      <p class="section-sub">Ответы остаются на этом устройстве до отправки формы. Мы не ставим диагнозы и не просим медицинские данные.</p>
+      <div class="quiz-card" id="quiz">
+        <div class="quiz-top"><div class="progress"><span id="progressBar"></span></div><span class="progress-label" id="progressLabel">вопрос 1 из 5</span></div>
+        <div class="question active" data-question="goal">
+          <h3>Какая цель для вас сейчас главная?</h3><p>Выберите то, с чем хотите разобраться в первую очередь.</p>
+          <div class="choices">
+            <button class="choice" data-value="restart">Вернуться к тренировкам<small>после паузы или с нуля</small></button>
+            <button class="choice" data-value="shape">Стать сильнее и выносливее<small>с понятным планом прогресса</small></button>
+            <button class="choice" data-value="time">Встроить спорт в график<small>без тренировок на полдня</small></button>
+            <button class="choice" data-value="technique">Уверенно освоить технику<small>в зале или дома</small></button>
+          </div>
+        </div>
+        <div class="question" data-question="time">
+          <h3>Сколько времени вы реально готовы выделять?</h3><p>Не идеальный план, а то, что можно удержать.</p>
+          <div class="choices">
+            <button class="choice" data-value="short">2 раза по 30-40 минут</button>
+            <button class="choice" data-value="standard">3 раза по 45-60 минут</button>
+            <button class="choice" data-value="deep">4+ тренировок и регулярный контроль</button>
+            <button class="choice" data-value="unknown">Пока не знаю, хочу обсудить</button>
+          </div>
+        </div>
+        <div class="question" data-question="place">
+          <h3>Где вам удобнее заниматься?</h3><p>Это влияет на план, инвентарь и формат обратной связи.</p>
+          <div class="choices">
+            <button class="choice" data-value="home">Дома</button>
+            <button class="choice" data-value="gym">В тренажёрном зале</button>
+            <button class="choice" data-value="both">И дома, и в зале</button>
+            <button class="choice" data-value="need">Нужна помощь с выбором</button>
+          </div>
+        </div>
+        <div class="question" data-question="barrier">
+          <h3>Что чаще всего сбивает с курса?</h3><p>Это не оценка. Ответ помогает выбрать уровень поддержки.</p>
+          <div class="choices">
+            <button class="choice" data-value="discipline">Бросаю через несколько недель</button>
+            <button class="choice" data-value="plan">Не понимаю, что делать</button>
+            <button class="choice" data-value="safety">Боюсь ошибиться с нагрузкой</button>
+            <button class="choice" data-value="schedule">График постоянно меняется</button>
+          </div>
+        </div>
+        <div class="question" data-question="support">
+          <h3>Какой уровень сопровождения будет полезен?</h3><p>Можно начать с малого и усилить поддержку позже.</p>
+          <div class="choices">
+            <button class="choice" data-value="solo">Нужен план и проверка старта</button>
+            <button class="choice" data-value="weekly">Нужны регулярные корректировки</button>
+            <button class="choice" data-value="close">Нужны частый контакт и контроль</button>
+            <button class="choice" data-value="talk">Хочу обсудить с тренером</button>
+          </div>
+        </div>
+        <div class="quiz-actions"><button class="text-button" id="backBtn" disabled>Назад</button><button class="btn btn-primary" id="nextBtn" disabled>Продолжить</button></div>
+      </div>
+      <div class="result" id="result" aria-live="polite">
+        <div class="result-grid">
+          <div>
+            <p class="eyebrow" style="color:var(--lime)">ваш маршрут старта</p>
+            <h3 id="resultTitle">Вам подойдёт спокойный, управляемый старт.</h3>
+            <p id="resultText"></p>
+            <button class="btn btn-primary" data-scroll="format">Посмотреть рекомендованный формат</button>
+          </div>
+          <div class="route"><p>Первые 7 дней</p><div><i>1</i><span>Короткий вводный созвон и уточнение ограничений.</span></div><div><i>2</i><span>Персональный план с реальной нагрузкой.</span></div><div><i>3</i><span>Первая тренировка и обратная связь по технике.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell offers" id="format">
+      <div class="offer-head"><div><p class="eyebrow">форматы работы</p><h2 class="section-title">Один маршрут - три уровня поддержки.</h2></div><p>Цена, состав услуги и правила работы показаны до записи. Рекомендация после диагностики не ограничивает ваш выбор.</p></div>
+      <div class="offers-grid">
+        <article class="package" data-package="start"><h3>Старт</h3><p class="desc">Для тех, кому нужен ясный план и безопасное начало.</p><p class="price">от 4 900 ₽<small>за стартовый месяц</small></p><ul class="features"><li>стартовый созвон</li><li>план тренировок</li><li>1 проверка техники</li><li>корректировка по итогам недели</li></ul><button class="btn btn-quiet select-package" data-package-name="Старт">Выбрать Старт</button></article>
+        <article class="package recommended" data-package="support"><span class="badge">рекомендация</span><h3>Сопровождение</h3><p class="desc">Для устойчивого прогресса и регулярной адаптации плана.</p><p class="price">от 9 900 ₽<small>за 4 недели</small></p><ul class="features"><li>всё из «Старт»</li><li>еженедельная обратная связь</li><li>корректировки нагрузки</li><li>контрольные точки прогресса</li></ul><button class="btn btn-dark select-package" data-package-name="Сопровождение">Выбрать Сопровождение</button></article>
+        <article class="package" data-package="pro"><h3>Плотный контакт</h3><p class="desc">Для тех, кому нужен частый контроль и приоритетная связь.</p><p class="price">по запросу<small>состав зависит от графика</small></p><ul class="features"><li>всё из «Сопровождение»</li><li>частые проверки техники</li><li>приоритетные ответы</li><li>совместное планирование недели</li></ul><button class="btn btn-quiet select-package" data-package-name="Плотный контакт">Обсудить формат</button></article>
+      </div>
+    </section>
+
+    <section class="proof">
+      <div class="shell proof-grid">
+        <div class="proof-panel"><p class="eyebrow">вместо громких обещаний</p><h3>Работа строится вокруг понятного процесса.</h3><p>Результат зависит от исходной точки, регулярности и состояния здоровья. Поэтому здесь нет гарантий веса, сантиметров или результата к определённой дате.</p><div class="proof-list"><div class="proof-item"><b>Прозрачная нагрузка</b><span>Вы понимаете, сколько времени займёт работа и что делаете сами.</span></div><div class="proof-item"><b>Управляемая обратная связь</b><span>Частота связи и сроки ответа фиксируются до старта.</span></div><div class="proof-item"><b>Границы компетенций</b><span>Тренер не заменяет врача и направляет к профильному специалисту при тревожных признаках.</span></div></div></div>
+        <div class="week"><p class="eyebrow" style="color:#6f2712">после оплаты</p><h3>Ваше начало без неопределённости</h3><div class="day"><strong>день 1</strong><p>Подтверждаем цель, график и удобный способ связи.</p></div><div class="day"><strong>день 2-3</strong><p>Проводим вводный созвон и собираем данные для плана.</p></div><div class="day"><strong>день 4-5</strong><p>Вы получаете первый блок тренировок и инструкции.</p></div><div class="day"><strong>день 7</strong><p>Разбираем первые ощущения и при необходимости корректируем нагрузку.</p></div></div>
+      </div>
+    </section>
+
+    <section class="shell faq">
+      <div class="faq-grid"><div><p class="eyebrow">вопросы до старта</p><h2 class="section-title">Без скрытых условий.</h2><p class="section-sub">Перед запуском этот блок нужно дополнить фактическими правилами переноса, заморозки и возврата конкретного тренера.</p></div><div>
+        <div class="faq-card"><button><span>А если мой график изменится?</span><span>+</span></button><div class="faq-answer">Формат должен предусматривать условия переноса и корректировки плана. Они фиксируются до оплаты.</div></div>
+        <div class="faq-card"><button><span>Нужно ли покупать абонемент в зал?</span><span>+</span></button><div class="faq-answer">Нет. План подбирается под домашний формат, зал или смешанный режим. Инвентарь согласуется на старте.</div></div>
+        <div class="faq-card"><button><span>Что делать при боли или хроническом состоянии?</span><span>+</span></button><div class="faq-answer">Не продолжайте тренировку через боль. Тренер не ставит диагнозы и может рекомендовать обратиться к врачу.</div></div>
+        <div class="faq-card"><button><span>Когда становится понятен первый результат?</span><span>+</span></button><div class="faq-answer">На старте фиксируются процессные контрольные точки, например регулярность и техника. Физический результат индивидуален.</div></div>
+      </div></div>
+    </section>
+
+    <section class="shell"><div class="cta"><div class="cta-grid"><div><p class="eyebrow" style="color:var(--lime)">следующий шаг</p><h2>Выберите время для вводного разговора.</h2><p>15 минут, чтобы проверить, подходит ли формат вам. Без автоматической подписки и обязательства покупать.</p></div><button class="btn btn-primary open-booking">Выбрать время</button></div><p class="legal">Демо-версия сайта. До публичного запуска замените цены, реквизиты, оферту, политику обработки персональных данных, согласия и реальные подтверждённые кейсы.</p></div></section>
+  </main>
+  <footer class="shell">© 2026 «Сила в ритме» · интерактивный маршрут старта</footer>
+
+  <div class="modal" id="bookingModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+    <div class="modal-card"><button class="icon-btn" id="closeModal" aria-label="Закрыть">×</button><h2 id="bookingTitle">Забронировать вводный разговор</h2><p id="bookingCopy">Оставьте контакт. Тренер уточнит удобное время и ответит на вопросы по выбранному формату.</p><form id="bookingForm" class="form-grid"><label>Имя<input required name="name" autocomplete="name" placeholder="Как к вам обращаться" /></label><label>Телефон или Telegram<input required name="contact" autocomplete="tel" placeholder="+7 или @username" /></label><label>Удобное время<select name="slot"><option>Будни, 10:00-13:00</option><option>Будни, 18:00-21:00</option><option>Выходные</option><option>Нужен другой вариант</option></select></label><label class="consent"><input required type="checkbox" /><span>Я согласен на обработку данных для ответа на заявку. Согласие на маркетинговые сообщения должно оформляться отдельно.</span></label><button class="btn btn-dark" type="submit">Отправить заявку</button><div class="success" id="successMessage">Заявка записана в демонстрационном режиме. Подключите CRM или почтовый сервис перед запуском.</div></form></div>
+  </div>
+  <script>
+    const state = { index:0, answers:{}, packageName:"Сопровождение" };
+    const questions = [...document.querySelectorAll('.question')];
+    const nextBtn = document.getElementById('nextBtn');
+    const backBtn = document.getElementById('backBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressLabel = document.getElementById('progressLabel');
+    const result = document.getElementById('result');
+    const quiz = document.getElementById('quiz');
+    const offer = document.querySelector('.package.recommended');
+    function renderQuiz() { questions.forEach((q,i)=>q.classList.toggle('active', i === state.index)); const q = questions[state.index]; const key = q.dataset.question; const selected = state.answers[key]; q.querySelectorAll('.choice').forEach(b=>b.classList.toggle('selected', b.dataset.value === selected)); nextBtn.disabled = !selected; nextBtn.textContent = state.index === questions.length - 1 ? 'Получить маршрут' : 'Продолжить'; backBtn.disabled = state.index === 0; progressBar.style.width = `${(state.index + 1) / questions.length * 100}%`; progressLabel.textContent = `вопрос ${state.index + 1} из ${questions.length}`; }
+    document.querySelectorAll('.choice').forEach(button => button.addEventListener('click', () => { state.answers[questions[state.index].dataset.question] = button.dataset.value; renderQuiz(); }));
+    nextBtn.addEventListener('click', () => { if (!state.answers[questions[state.index].dataset.question]) return; if (state.index < questions.length - 1) { state.index++; renderQuiz(); return; } showResult(); });
+    backBtn.addEventListener('click', () => { if (state.index > 0) { state.index--; renderQuiz(); } });
+    function showResult() { const a = state.answers; const compact = a.time === 'short' || a.goal === 'time' || a.barrier === 'schedule'; const independent = a.support === 'solo'; state.packageName = independent ? 'Старт' : compact ? 'Сопровождение' : a.support === 'close' ? 'Плотный контакт' : 'Сопровождение'; const texts = { restart:'Вам важен спокойный возврат к нагрузке без попытки наверстать всё сразу.', shape:'Вам подойдёт план с контрольными точками и постепенным увеличением нагрузки.', time:'Вам нужен минимально эффективный формат, который не развалится при плотном календаре.', technique:'Вам важны понятные инструкции и регулярная проверка техники.' }; document.getElementById('resultTitle').textContent = `Рекомендуем формат «${state.packageName}».`; document.getElementById('resultText').textContent = `${texts[a.goal]} Начните с ${a.time === 'short' ? 'коротких тренировок 2 раза в неделю' : 'реалистичной регулярности'}, затем корректируйте план по обратной связи.`; quiz.style.display = 'none'; result.classList.add('active'); document.querySelectorAll('.package').forEach(card=>card.classList.remove('recommended')); const selectedCard = [...document.querySelectorAll('.package')].find(card=>card.dataset.package === ({'Старт':'start','Сопровождение':'support','Плотный контакт':'pro'}[state.packageName])); selectedCard.classList.add('recommended'); const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = 'рекомендация для вас'; selectedCard.prepend(badge); }
+    document.querySelectorAll('[data-scroll]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.scroll).scrollIntoView({behavior:'smooth', block:'start'})));
+    document.querySelectorAll('.faq-card button').forEach(button=>button.addEventListener('click',()=>{ const card = button.parentElement; card.classList.toggle('open'); button.lastElementChild.textContent = card.classList.contains('open') ? '−' : '+'; }));
+    const modal = document.getElementById('bookingModal'); const bookingCopy = document.getElementById('bookingCopy');
+    function openModal(name = state.packageName) { state.packageName = name; bookingCopy.textContent = `Вы выбрали формат «${name}». Оставьте контакт, чтобы согласовать старт без обязательства покупать.`; modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); modal.querySelector('input').focus(); }
+    document.querySelectorAll('.open-booking').forEach(b=>b.addEventListener('click',()=>openModal())); document.querySelectorAll('.select-package').forEach(b=>b.addEventListener('click',()=>openModal(b.dataset.packageName))); document.getElementById('closeModal').addEventListener('click',closeModal); modal.addEventListener('click',event=>{if(event.target===modal)closeModal();}); document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal();}); function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+    document.getElementById('bookingForm').addEventListener('submit', event=>{ event.preventDefault(); document.getElementById('successMessage').classList.add('show'); event.currentTarget.querySelector('button[type="submit"]').disabled = true; });
+    renderQuiz();
+  </script>
+</body>
+</html>
